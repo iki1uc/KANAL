@@ -1,3 +1,29 @@
-ID = <1-Zeichen-Zustand>
-TMP = TMP/<ID>/<slot>.json
-HDF = HDF/<ID>/<slot>.hdf
+function ALBERTUS_FIND_SLOT_STATE(id, busy) {
+
+    // Zustand-Slots (Breite)
+    const base = ["⊙","⊕","⊗","○","□","△","◇","B","∞"];
+
+    // VAR-Slots (Orbit-C)
+    const varSlots = ["V⊙","V⊕","V⊗","V○","V□","V△","V◇","VB","V∞"];
+
+    // Meta-Slot
+    const meta = ["X"];
+
+    // Orbit-Slot
+    const orbit = ["∞"];
+
+    // 1) Zustand-Slots prüfen
+    for (const p of base)
+        if (!busy[p]) return { slot: p, tmp: `TMP/${id}/${p}.json`, hdf: `HDF/${id}/${p}.hdf` };
+
+    // 2) VAR-Slots prüfen
+    for (const p of varSlots)
+        if (!busy[p]) return { slot: p, tmp: `TMP/${id}/${p}.json`, hdf: `HDF/${id}/${p}.hdf` };
+
+    // 3) Meta-Slot prüfen
+    if (!busy["X"])
+        return { slot: "X", tmp: `TMP/${id}/X.json`, hdf: `HDF/${id}/X.hdf` };
+
+    // 4) Orbit-Slot (∞)
+    return { slot: "∞", tmp: `TMP/${id}/∞.json`, hdf: `HDF/${id}/∞.hdf` };
+}

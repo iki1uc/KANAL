@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>ALBERTUS – 3×3 · 9×9 · ID‑System</title>
+<title>ALBERTUS – Orbit Engine C · Universal</title>
 
 <style>
 body { background:#000; color:#0f0; font-family:monospace; padding:40px; }
@@ -15,88 +15,150 @@ button { background:#222; color:#0f0; padding:10px 20px; border:1px solid #6cf; 
 </head>
 <body>
 
-<h1>ALBERTUS – ID‑System · 3×3 Positionen · 9×9 TMP‑Matrix</h1>
+<h1>ALBERTUS – Orbit Engine C · RESPO/BEN Auto‑Steuerung</h1>
 
 <script>
 // -----------------------------------------
 // REPO-ID (H = TRANS, B = KANAL, T = WARB)
 // -----------------------------------------
-const ID = "H";   // TRANS → H, KANAL → B, WARB → T
+const ID = "H";   // TRANS = H, KANAL = B, WARB = T
 </script>
 
 <div class="block">
-    <div class="title">ID‑System (H/B/T)</div>
+    <div class="title">ID‑System (H/B/T + VARX + VAR∞)</div>
     <pre id="id"></pre>
 </div>
 
 <div class="block">
-    <div class="title">Aktive Position (1–9)</div>
-    <pre id="pos"></pre>
-    <button onclick="nextPos()">Position wechseln</button>
+    <div class="title">Orbit‑Position</div>
+    <pre id="orbit"></pre>
+    <button onclick="nextOrbit()">Orbit wechseln</button>
 </div>
 
 <div class="block">
-    <div class="title">TMP‑Routing (9×9)</div>
+    <div class="title">TMP‑Routing (9×9 Universal)</div>
     <pre id="tmp"></pre>
+</div>
+
+<div class="block">
+    <div class="title">RESPO‑Interpretation</div>
+    <pre id="respo"></pre>
+</div>
+
+<div class="block">
+    <div class="title">BEN‑Bewertung</div>
+    <pre id="ben"></pre>
+</div>
+
+<div class="block">
+    <div class="title">AI‑Steuer‑Algorithmus</div>
+    <pre id="ai"></pre>
 </div>
 
 <script type="module">
 
 // -----------------------------------------
-// ALBERTUS POSITION ENGINE
+// ALBERTUS ORBIT ENGINE C
 // -----------------------------------------
-function ALBERTUS_POSITION_ENGINE(pos = 1, id = "H") {
+function ALBERTUS_ORBIT_ENGINE(orbit = "1", id = "H") {
 
-    const flow = [1,2,3,4,5,6,7,8,9];
-    const next = flow[(flow.indexOf(pos) + 1) % flow.length];
+    const baseFlow = ["1","2","3","4","5","6","7","8","9"];
+    const varFlow  = ["VAR1","VAR2","VAR3","VAR4","VAR5","VAR6","VAR7","VAR8","VAR9"];
+    const metaFlow = ["VARX","VAR∞"];
+
+    const fullFlow = [...baseFlow, ...varFlow, ...metaFlow];
+
+    const next = fullFlow[(fullFlow.indexOf(orbit) + 1) % fullFlow.length];
 
     return {
         id,
-        pos,
+        orbit,
         next,
-        tmpPath: `TMP/pos${pos}/`,
-        description: "Albertus 3×3 Position Engine"
+        tmpPath: `TMP/${orbit}/`,
+        description: "Albertus Orbit Engine C"
+    };
+}
+
+// -----------------------------------------
+// RESPO INTERPRETER
+// -----------------------------------------
+function RESPO_INTERPRET(tmpPath) {
+    return {
+        tmpPath,
+        mode: "RESPO-AUTO",
+        info: "RESPO interpretiert TMP-Daten automatisch"
+    };
+}
+
+// -----------------------------------------
+// BEN INTERPRETER
+// -----------------------------------------
+function BEN_EVAL(tmpPath) {
+    return {
+        tmpPath,
+        mode: "BEN-AUTO",
+        score: Math.floor(Math.random() * 100),
+        info: "BEN bewertet TMP-Daten automatisch"
+    };
+}
+
+// -----------------------------------------
+// AI STEUER ALGORITHMUS
+// -----------------------------------------
+function AI_STEUER_ALGO(orbit, id) {
+    return {
+        id,
+        orbit,
+        action: `AI-Regelung für ${id} in Orbit ${orbit}`,
+        info: "Eigener Algorithmus aktiv"
     };
 }
 
 // -----------------------------------------
 // STATE
 // -----------------------------------------
-let currentPos = 1;
+let currentOrbit = "1";
 
 // -----------------------------------------
 // RENDER
 // -----------------------------------------
 function render() {
 
-    const engine = ALBERTUS_POSITION_ENGINE(currentPos, ID);
+    const engine = ALBERTUS_ORBIT_ENGINE(currentOrbit, ID);
 
     document.getElementById("id").innerText =
-        JSON.stringify({ ID, meaning: ID === "H" ? "Höhe" : ID === "B" ? "Breite" : "Tiefe" }, null, 2);
+        JSON.stringify({
+            ID,
+            meaning:
+                ID === "H" ? "Höhe" :
+                ID === "B" ? "Breite" :
+                ID === "T" ? "Tiefe" :
+                "Virtuell / Meta"
+        }, null, 2);
 
-    document.getElementById("pos").innerText =
+    document.getElementById("orbit").innerText =
         JSON.stringify(engine, null, 2);
 
     document.getElementById("tmp").innerText =
         `TMP‑Ordner: ${engine.tmpPath}\n` +
-        `Dateien:\n` +
-        `- ${engine.tmpPath}tmp1.json\n` +
-        `- ${engine.tmpPath}tmp2.json\n` +
-        `- ${engine.tmpPath}tmp3.json\n` +
-        `- ${engine.tmpPath}tmp4.json\n` +
-        `- ${engine.tmpPath}tmp5.json\n` +
-        `- ${engine.tmpPath}tmp6.json\n` +
-        `- ${engine.tmpPath}tmp7.json\n` +
-        `- ${engine.tmpPath}tmp8.json\n` +
-        `- ${engine.tmpPath}tmp9.json\n`;
+        Array.from({length:9}, (_,i)=>`- ${engine.tmpPath}tmp${i+1}.json`).join("\n");
+
+    document.getElementById("respo").innerText =
+        JSON.stringify(RESPO_INTERPRET(engine.tmpPath), null, 2);
+
+    document.getElementById("ben").innerText =
+        JSON.stringify(BEN_EVAL(engine.tmpPath), null, 2);
+
+    document.getElementById("ai").innerText =
+        JSON.stringify(AI_STEUER_ALGO(engine.orbit, ID), null, 2);
 }
 
 // -----------------------------------------
-// POSITION WECHSEL
+// ORBIT WECHSEL
 // -----------------------------------------
-window.nextPos = function() {
-    const engine = ALBERTUS_POSITION_ENGINE(currentPos, ID);
-    currentPos = engine.next;
+window.nextOrbit = function() {
+    const engine = ALBERTUS_ORBIT_ENGINE(currentOrbit, ID);
+    currentOrbit = engine.next;
     render();
 };
 

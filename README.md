@@ -123,5 +123,10 @@ KANAL bildet die Breitenachse des Systems und verbindet:
 ---
 
 ## 9. Status
+KANAL nutzt Zustand-IDs (⊙ ⊕ ⊗ ○ □ △ ◇ B ∞)
+KANAL erzeugt TMP/HDF-Pfade automatisch
+KANAL nutzt Albertus Orbit Engine C
+KANAL nutzt ALBERTUS_FIND_SLOT_STATE()
+KANAL ist Breitenachse (ID = B)
 
 KANAL ist aktiv und bildet die Breitenachse für SYS.

@@ -1,37 +1,49 @@
 # KANAL – Breite (B)
 
-## ID-System
-KANAL arbeitet mit der ID **B** (Breite).  
+## 1. ID-System
+KANAL verwendet die ID **B** (Breite).  
 Diese ID ist ein 1‑Zeichen‑Schlüssel und wird als TMP‑Speicherpfad genutzt:
 
 `TMP/B/<slot>.json`
 
-## Albertus Orbit Engine C
-KANAL nutzt die Orbit‑Engine C, die automatisch:
+Die ID bestimmt:
+- Breiten-Interpretation (RESPO_B)
+- Breiten-Bewertung (BEN_B)
+- Breiten-Steuerung (AI-B)
 
-- 3×3 Slots (1–9)
-- VAR-Slots (V1–V9)
-- Meta-Slot (X)
-- Orbit-Slot (∞)
+## 2. Albertus Orbit Engine C
+KANAL nutzt die Orbit‑Engine C, die automatisch folgende Ebenen durchläuft:
 
-durchläuft und ausweicht, wenn ein Slot besetzt ist.
+- 3×3 Slots: 1–9  
+- VAR-Slots: V1–V9  
+- Meta-Slot: X  
+- Orbit-Slot: ∞  
 
-## Slot-Finder
-KANAL verwendet:
+Die Engine weicht automatisch aus, wenn ein Slot besetzt ist.
+
+## 3. Slot-Finder
+KANAL nutzt:
 
 `ALBERTUS_FIND_SLOT(B, busy)`
 
-Die Engine wählt automatisch den nächsten freien Slot.
+Die Engine wählt den nächsten freien Slot.
 
-## RESPO_B – Breiten-Interpretation
-RESPO interpretiert TMP-Daten als Breitenmatrix.
+## 4. RESPO_B – Breiten-Interpretation
+RESPO_B interpretiert TMP-Daten als Breitenmatrix.
 
-## BEN_B – Breiten-Bewertung
-BEN bewertet die Breitenstruktur des aktiven TMP-Slots.
+## 5. BEN_B – Breiten-Bewertung
+BEN_B bewertet die Breitenstruktur des aktiven TMP-Slots.
 
-## AI-B – Breiten-Steueralgorithmus
-Der AI-Algorithmus steuert den Breitenorbit und entscheidet,
+## 6. AI-B – Breiten-Steueralgorithmus
+Der AI-B Algorithmus steuert den Breitenorbit und entscheidet,
 wie RESPO/BEN-Daten weiterverwendet werden.
 
-## Zweck
+## 7. Zweck
 KANAL bildet die Breitenachse des Systems.
+
+## 8. Module
+- [Albertus Engine](ca://s?q=Albertus_Engine)
+- [Slot-Finder](ca://s?q=Slot_Finder)
+- [RESPO_B](ca://s?q=RESPO_B)
+- [BEN_B](ca://s?q=BEN_B)
+- [AI-B](ca://s?q=AI_B)

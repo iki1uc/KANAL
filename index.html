@@ -2,122 +2,109 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>ANKER – S01 · iki1uc</title>
+<title>ALBERTUS – 3×3 · 9×9 · ID‑System</title>
 
 <style>
 body { background:#000; color:#0f0; font-family:monospace; padding:40px; }
-h1 { color:#0f0; letter-spacing:4px; margin-bottom:30px; }
 .block { background:#111; border:1px solid #333; padding:25px; margin-bottom:30px; border-radius:8px; }
 .title { font-size:22px; color:#6cf; margin-bottom:10px; }
-pre { background:#000; border-left:3px solid #6cf; padding:15px; margin-top:10px; white-space:pre-wrap; }
-a { color:#6cf; text-decoration:none; font-weight:bold; }
+pre { background:#000; border-left:3px solid #6cf; padding:15px; white-space:pre-wrap; }
+button { background:#222; color:#0f0; padding:10px 20px; border:1px solid #6cf; margin-right:10px; }
 </style>
 
-<!-- SYSTEM CORE MODULES -->
-<script src="../HH/cr/RESPO.core.js"></script>
-<script src="../HH/cr/AXI.core.js"></script>
-<script src="../HH/cr/TEM.core.js"></script>
-<script src="../HH/cr/RUN8.core.js"></script>
-
-<!-- ID MODULES -->
-<script src="IDkoop.js"></script>
-<script src="IDneutral.js"></script>
-<script src="IDpook.js"></script>
-
 </head>
-
 <body>
 
-<h1>ANKER – S01 · iki1uc</h1>
-
-<!-- ACHSEN STATUS -->
-<div class="block">
-    <div class="title">Stabilisationsachse</div>
-    <p id="axis-status">Lade Achsen…</p>
-</div>
-
-<!-- IDENTITÄT -->
-<div class="block">
-    <div class="title">Identität</div>
-    <p>
-        <a href="id.html">→ ANKER‑Identität öffnen</a>
-    </p>
-    <pre id="id-status"></pre>
-</div>
-
-<!-- ACHSEN LISTE -->
-<div class="block">
-    <div class="title">Stabilisierte Achsen</div>
-    <pre id="axis-list"></pre>
-</div>
-
-<!-- RESPO STATUS -->
-<div class="block">
-    <div class="title">RESPO‑Status</div>
-    <pre id="respo-status"></pre>
-</div>
-
-<!-- SYSTEM STATUS -->
-<div class="block">
-    <div class="title">System‑Status</div>
-    <pre id="system-status"></pre>
-</div>
+<h1>ALBERTUS – ID‑System · 3×3 Positionen · 9×9 TMP‑Matrix</h1>
 
 <script>
-(async function () {
+// -----------------------------------------
+// REPO-ID (H = TRANS, B = KANAL, T = WARB)
+// -----------------------------------------
+const ID = "H";   // TRANS → H, KANAL → B, WARB → T
+</script>
 
-    /* -------------------------------
-       ANKER DATEN LADEN
-    --------------------------------*/
-    const anker = await fetch("ANKER.json").then(r => r.json()).catch(() => null);
-    const raw = await fetch("ANKER.raw").then(r => r.text()).catch(() => "");
+<div class="block">
+    <div class="title">ID‑System (H/B/T)</div>
+    <pre id="id"></pre>
+</div>
 
-    document.getElementById("axis-list").innerText = raw || "Keine Achsen gefunden";
+<div class="block">
+    <div class="title">Aktive Position (1–9)</div>
+    <pre id="pos"></pre>
+    <button onclick="nextPos()">Position wechseln</button>
+</div>
 
+<div class="block">
+    <div class="title">TMP‑Routing (9×9)</div>
+    <pre id="tmp"></pre>
+</div>
 
-    /* -------------------------------
-       AXI ENGINE
-    --------------------------------*/
-    const axi = AXI_CORE();
-    document.getElementById("axis-status").innerText =
-        axi ? "Achsen stabil" : "Achsenfehler";
+<script type="module">
 
+// -----------------------------------------
+// ALBERTUS POSITION ENGINE
+// -----------------------------------------
+function ALBERTUS_POSITION_ENGINE(pos = 1, id = "H") {
 
-    /* -------------------------------
-       RESPO ENGINE
-    --------------------------------*/
-    const respo = RESPO_CORE(anker || {});
-    document.getElementById("respo-status").innerText =
-        `Score: ${respo.score}\nStatus: ${respo.ok ? "STABIL" : "KRITISCH"}`;
+    const flow = [1,2,3,4,5,6,7,8,9];
+    const next = flow[(flow.indexOf(pos) + 1) % flow.length];
 
-
-    /* -------------------------------
-       ID MODUS ERKENNEN
-    --------------------------------*/
-    let idMode = "neutral";
-    if (ID_KOOP?.active) idMode = "koop";
-    if (ID_POOK?.active) idMode = "pook";
-
-    const idMap = {
-        koop: ID_KOOP,
-        neutral: ID_NEUTRAL,
-        pook: ID_POOK
+    return {
+        id,
+        pos,
+        next,
+        tmpPath: `TMP/pos${pos}/`,
+        description: "Albertus 3×3 Position Engine"
     };
+}
 
-    document.getElementById("id-status").innerText =
-        `Modus: ${idMode.toUpperCase()}\nInfo: ${idMap[idMode].info()}`;
+// -----------------------------------------
+// STATE
+// -----------------------------------------
+let currentPos = 1;
 
+// -----------------------------------------
+// RENDER
+// -----------------------------------------
+function render() {
 
-    /* -------------------------------
-       SYSTEM STATUS
-    --------------------------------*/
-    const tem = TEM_CORE();
-    const run8 = RUN8();
+    const engine = ALBERTUS_POSITION_ENGINE(currentPos, ID);
 
-    document.getElementById("system-status").innerText =
-        `Zeit: ${tem.timestamp}\nKernel: ${run8.run}\nSystem: OK`;
+    document.getElementById("id").innerText =
+        JSON.stringify({ ID, meaning: ID === "H" ? "Höhe" : ID === "B" ? "Breite" : "Tiefe" }, null, 2);
 
-})();
+    document.getElementById("pos").innerText =
+        JSON.stringify(engine, null, 2);
+
+    document.getElementById("tmp").innerText =
+        `TMP‑Ordner: ${engine.tmpPath}\n` +
+        `Dateien:\n` +
+        `- ${engine.tmpPath}tmp1.json\n` +
+        `- ${engine.tmpPath}tmp2.json\n` +
+        `- ${engine.tmpPath}tmp3.json\n` +
+        `- ${engine.tmpPath}tmp4.json\n` +
+        `- ${engine.tmpPath}tmp5.json\n` +
+        `- ${engine.tmpPath}tmp6.json\n` +
+        `- ${engine.tmpPath}tmp7.json\n` +
+        `- ${engine.tmpPath}tmp8.json\n` +
+        `- ${engine.tmpPath}tmp9.json\n`;
+}
+
+// -----------------------------------------
+// POSITION WECHSEL
+// -----------------------------------------
+window.nextPos = function() {
+    const engine = ALBERTUS_POSITION_ENGINE(currentPos, ID);
+    currentPos = engine.next;
+    render();
+};
+
+// -----------------------------------------
+// INIT
+// -----------------------------------------
+render();
+
 </script>
 
 </body>

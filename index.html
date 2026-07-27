@@ -1,21 +1,33 @@
-<script>
-// KANAL → Breite
-const ID = "B";
+// KANAL → Breite-ID (Zustand)
+const ID = "B";   // Breite, Zustand, 1-Zeichen-ID
 
-// RESPO_B interpretiert Breite
-function RESPO_INTERPRET(tmpPath) {
+// TMP/HDF-Pfade automatisch erzeugen
+function TMP_PATH(slot) {
+    return `TMP/${ID}/${slot}.json`;
+}
+
+function HDF_PATH(slot) {
+    return `HDF/${ID}/${slot}.hdf`;
+}
+
+// RESPO_B → Breiten-Interpretation
+function RESPO_B(slot) {
     return {
-        tmpPath,
+        id: ID,
+        slot,
+        tmp: TMP_PATH(slot),
         mode: "RESPO-B",
         meaning: "Breiten-Interpretation",
         info: "RESPO interpretiert TMP-Daten als Breitenmatrix"
     };
 }
 
-// BEN_B bewertet Breite
-function BEN_EVAL(tmpPath) {
+// BEN_B → Breiten-Bewertung
+function BEN_B(slot) {
     return {
-        tmpPath,
+        id: ID,
+        slot,
+        tmp: TMP_PATH(slot),
         mode: "BEN-B",
         score: Math.floor(Math.random() * 100),
         meaning: "Breiten-Bewertung",
@@ -23,13 +35,28 @@ function BEN_EVAL(tmpPath) {
     };
 }
 
-// AI-B steuert Breite
-function AI_STEUER_ALGO(orbit, id) {
+// AI-B → Breiten-Steueralgorithmus
+function AI_B(slot, orbit) {
     return {
-        id,
+        id: ID,
+        slot,
         orbit,
+        hdf: HDF_PATH(slot),
         action: "AI-Breiten-Regelung aktiv",
-        info: "AI steuert Breitenorbit"
+        info: "AI steuert Breitenorbit basierend auf RESPO/BEN"
     };
 }
-</script>
+
+// KANAL → Weiterleitung
+function KANAL_FORWARD(slot, orbit) {
+    return {
+        id: ID,
+        slot,
+        tmp: TMP_PATH(slot),
+        hdf: HDF_PATH(slot),
+        respo: RESPO_B(slot),
+        ben: BEN_B(slot),
+        ai: AI_B(slot, orbit),
+        state: "KANAL-Weiterleitung aktiv"
+    };
+}

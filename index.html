@@ -1,173 +1,35 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="UTF-8">
-<title>ALBERTUS – Orbit Engine C · Universal</title>
-
-<style>
-body { background:#000; color:#0f0; font-family:monospace; padding:40px; }
-.block { background:#111; border:1px solid #333; padding:25px; margin-bottom:30px; border-radius:8px; }
-.title { font-size:22px; color:#6cf; margin-bottom:10px; }
-pre { background:#000; border-left:3px solid #6cf; padding:15px; white-space:pre-wrap; }
-button { background:#222; color:#0f0; padding:10px 20px; border:1px solid #6cf; margin-right:10px; }
-</style>
-
-</head>
-<body>
-
-<h1>ALBERTUS – Orbit Engine C · RESPO/BEN Auto‑Steuerung</h1>
-
 <script>
-// -----------------------------------------
-// REPO-ID (H = TRANS, B = KANAL, T = WARB)
-// -----------------------------------------
-const ID = "H";   // TRANS = H, KANAL = B, WARB = T
-</script>
+// KANAL → Breite
+const ID = "B";
 
-<div class="block">
-    <div class="title">ID‑System (H/B/T + VARX + VAR∞)</div>
-    <pre id="id"></pre>
-</div>
-
-<div class="block">
-    <div class="title">Orbit‑Position</div>
-    <pre id="orbit"></pre>
-    <button onclick="nextOrbit()">Orbit wechseln</button>
-</div>
-
-<div class="block">
-    <div class="title">TMP‑Routing (9×9 Universal)</div>
-    <pre id="tmp"></pre>
-</div>
-
-<div class="block">
-    <div class="title">RESPO‑Interpretation</div>
-    <pre id="respo"></pre>
-</div>
-
-<div class="block">
-    <div class="title">BEN‑Bewertung</div>
-    <pre id="ben"></pre>
-</div>
-
-<div class="block">
-    <div class="title">AI‑Steuer‑Algorithmus</div>
-    <pre id="ai"></pre>
-</div>
-
-<script type="module">
-
-// -----------------------------------------
-// ALBERTUS ORBIT ENGINE C
-// -----------------------------------------
-function ALBERTUS_ORBIT_ENGINE(orbit = "1", id = "H") {
-
-    const baseFlow = ["1","2","3","4","5","6","7","8","9"];
-    const varFlow  = ["VAR1","VAR2","VAR3","VAR4","VAR5","VAR6","VAR7","VAR8","VAR9"];
-    const metaFlow = ["VARX","VAR∞"];
-
-    const fullFlow = [...baseFlow, ...varFlow, ...metaFlow];
-
-    const next = fullFlow[(fullFlow.indexOf(orbit) + 1) % fullFlow.length];
-
-    return {
-        id,
-        orbit,
-        next,
-        tmpPath: `TMP/${orbit}/`,
-        description: "Albertus Orbit Engine C"
-    };
-}
-
-// -----------------------------------------
-// RESPO INTERPRETER
-// -----------------------------------------
+// RESPO_B interpretiert Breite
 function RESPO_INTERPRET(tmpPath) {
     return {
         tmpPath,
-        mode: "RESPO-AUTO",
-        info: "RESPO interpretiert TMP-Daten automatisch"
+        mode: "RESPO-B",
+        meaning: "Breiten-Interpretation",
+        info: "RESPO interpretiert TMP-Daten als Breitenmatrix"
     };
 }
 
-// -----------------------------------------
-// BEN INTERPRETER
-// -----------------------------------------
+// BEN_B bewertet Breite
 function BEN_EVAL(tmpPath) {
     return {
         tmpPath,
-        mode: "BEN-AUTO",
+        mode: "BEN-B",
         score: Math.floor(Math.random() * 100),
-        info: "BEN bewertet TMP-Daten automatisch"
+        meaning: "Breiten-Bewertung",
+        info: "BEN bewertet Breitenstruktur"
     };
 }
 
-// -----------------------------------------
-// AI STEUER ALGORITHMUS
-// -----------------------------------------
+// AI-B steuert Breite
 function AI_STEUER_ALGO(orbit, id) {
     return {
         id,
         orbit,
-        action: `AI-Regelung für ${id} in Orbit ${orbit}`,
-        info: "Eigener Algorithmus aktiv"
+        action: "AI-Breiten-Regelung aktiv",
+        info: "AI steuert Breitenorbit"
     };
 }
-
-// -----------------------------------------
-// STATE
-// -----------------------------------------
-let currentOrbit = "1";
-
-// -----------------------------------------
-// RENDER
-// -----------------------------------------
-function render() {
-
-    const engine = ALBERTUS_ORBIT_ENGINE(currentOrbit, ID);
-
-    document.getElementById("id").innerText =
-        JSON.stringify({
-            ID,
-            meaning:
-                ID === "H" ? "Höhe" :
-                ID === "B" ? "Breite" :
-                ID === "T" ? "Tiefe" :
-                "Virtuell / Meta"
-        }, null, 2);
-
-    document.getElementById("orbit").innerText =
-        JSON.stringify(engine, null, 2);
-
-    document.getElementById("tmp").innerText =
-        `TMP‑Ordner: ${engine.tmpPath}\n` +
-        Array.from({length:9}, (_,i)=>`- ${engine.tmpPath}tmp${i+1}.json`).join("\n");
-
-    document.getElementById("respo").innerText =
-        JSON.stringify(RESPO_INTERPRET(engine.tmpPath), null, 2);
-
-    document.getElementById("ben").innerText =
-        JSON.stringify(BEN_EVAL(engine.tmpPath), null, 2);
-
-    document.getElementById("ai").innerText =
-        JSON.stringify(AI_STEUER_ALGO(engine.orbit, ID), null, 2);
-}
-
-// -----------------------------------------
-// ORBIT WECHSEL
-// -----------------------------------------
-window.nextOrbit = function() {
-    const engine = ALBERTUS_ORBIT_ENGINE(currentOrbit, ID);
-    currentOrbit = engine.next;
-    render();
-};
-
-// -----------------------------------------
-// INIT
-// -----------------------------------------
-render();
-
 </script>
-
-</body>
-</html>

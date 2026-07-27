@@ -1,16 +1,72 @@
-// KANAL → Breite-ID (Zustand)
-const ID = "B";   // Breite, Zustand, 1-Zeichen-ID
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>KANAL · Breite (B)</title>
+<style>
+    body {
+        background:#111;
+        color:#0ff;
+        font-family:Consolas, monospace;
+        padding:20px;
+    }
+    #kanal-ui {
+        border:1px solid #0ff;
+        padding:15px;
+        margin-top:20px;
+        white-space:pre;
+        background:#000;
+    }
+    button {
+        background:#0ff;
+        color:#000;
+        padding:10px 20px;
+        border:none;
+        font-weight:bold;
+        cursor:pointer;
+        margin-right:10px;
+    }
+</style>
+</head>
+<body>
 
-// TMP/HDF-Pfade automatisch erzeugen
+<h1>KANAL · Breite (B)</h1>
+<p>Orbit‑C · RESPO_B · BEN_B · AI‑B · TMP/HDF</p>
+
+<button onclick="RUN_KANAL()">KANAL START</button>
+<button onclick="RUN_ORBIT()">ORBIT‑C</button>
+
+<div id="kanal-ui">KANAL wartet…</div>
+
+<script>
+// ------------------------------------------------------------
+//  KANAL → Breite-ID (Zustand)
+// ------------------------------------------------------------
+const ID = "B";   // Breite, Zustand, 1‑Zeichen‑ID
+
+// ------------------------------------------------------------
+//  TMP/HDF-Pfade automatisch erzeugen
+// ------------------------------------------------------------
 function TMP_PATH(slot) {
     return `TMP/${ID}/${slot}.json`;
 }
-
 function HDF_PATH(slot) {
     return `HDF/${ID}/${slot}.hdf`;
 }
 
-// RESPO_B → Breiten-Interpretation
+// ------------------------------------------------------------
+//  Orbit‑C (NEU)
+// ------------------------------------------------------------
+const ORBIT_C = ["⊙","⊕","⊗","○","□","△","◇","∞"];
+
+function ORBIT_NEXT(current) {
+    const i = ORBIT_C.indexOf(current);
+    return ORBIT_C[(i+1) % ORBIT_C.length];
+}
+
+// ------------------------------------------------------------
+//  RESPO_B → Breiten-Interpretation
+// ------------------------------------------------------------
 function RESPO_B(slot) {
     return {
         id: ID,
@@ -22,7 +78,9 @@ function RESPO_B(slot) {
     };
 }
 
-// BEN_B → Breiten-Bewertung
+// ------------------------------------------------------------
+//  BEN_B → Breiten-Bewertung
+// ------------------------------------------------------------
 function BEN_B(slot) {
     return {
         id: ID,
@@ -35,7 +93,9 @@ function BEN_B(slot) {
     };
 }
 
-// AI-B → Breiten-Steueralgorithmus
+// ------------------------------------------------------------
+//  AI-B → Breiten-Steueralgorithmus
+// ------------------------------------------------------------
 function AI_B(slot, orbit) {
     return {
         id: ID,
@@ -47,16 +107,54 @@ function AI_B(slot, orbit) {
     };
 }
 
-// KANAL → Weiterleitung
+// ------------------------------------------------------------
+//  KANAL_FORWARD (ERWEITERT)
+// ------------------------------------------------------------
 function KANAL_FORWARD(slot, orbit) {
     return {
         id: ID,
         slot,
+        orbit,
         tmp: TMP_PATH(slot),
         hdf: HDF_PATH(slot),
         respo: RESPO_B(slot),
         ben: BEN_B(slot),
         ai: AI_B(slot, orbit),
+        nextOrbit: ORBIT_NEXT(orbit),
         state: "KANAL-Weiterleitung aktiv"
     };
 }
+
+// ------------------------------------------------------------
+//  UI-Ausgabe
+// ------------------------------------------------------------
+function SHOW(data) {
+    document.getElementById("kanal-ui").innerText =
+        JSON.stringify(data, null, 2);
+}
+
+// ------------------------------------------------------------
+//  KANAL START
+// ------------------------------------------------------------
+function RUN_KANAL() {
+    const slot = "⊙";
+    const orbit = "○";
+    const data = KANAL_FORWARD(slot, orbit);
+    SHOW(data);
+}
+
+// ------------------------------------------------------------
+//  ORBIT-C DEMO
+// ------------------------------------------------------------
+function RUN_ORBIT() {
+    let o = "⊙";
+    const interval = setInterval(() => {
+        o = ORBIT_NEXT(o);
+        SHOW({orbit:o, info:"Orbit-C läuft"});
+    }, 500);
+    setTimeout(() => clearInterval(interval), 6000);
+}
+</script>
+
+</body>
+</html>

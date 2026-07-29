@@ -1,29 +1,38 @@
-function ALBERTUS_FIND_SLOT_STATE(id, busy) {
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ID · KANAL</title>
+<style>
+body{background:#000;color:#0f0;font-family:monospace;padding:40px;}
+pre{background:#111;border-left:3px solid #6cf;padding:12px;}
+</style>
+</head>
+<body>
 
-    // Zustand-Slots (Breite)
-    const base = ["⊙","⊕","⊗","○","□","△","◇","B","∞"];
+<h1>ID · KANAL</h1>
 
-    // VAR-Slots (Orbit-C)
-    const varSlots = ["V⊙","V⊕","V⊗","V○","V□","V△","V◇","VB","V∞"];
+<pre>
+ID.CORE     = KANAL
+ID.ROLE     = Breite (B) · Horizontalachse
+ID.STATE    = stabil
+ID.READY    = 100%
+ID.SYS      = sys.in.json
+ID.NC       = active
+ID.ROM      = false
+ID.LOCATION = /KANAL/
 
-    // Meta-Slot
-    const meta = ["X"];
+MODULES:
+ - KANAL.core.js
+ - repo-id-3.csv
+ - repo-id-6.csv
 
-    // Orbit-Slot
-    const orbit = ["∞"];
+CAPABILITIES:
+ - Breitenanalyse (B)
+ - Slot-Finder (1–9, B1–B9, BX, B∞)
+ - Fusion mit Tiefe (T) und Höhe (H)
+ - Vorbereitung für NC.vector.next
+</pre>
 
-    // 1) Zustand-Slots prüfen
-    for (const p of base)
-        if (!busy[p]) return { slot: p, tmp: `TMP/${id}/${p}.json`, hdf: `HDF/${id}/${p}.hdf` };
-
-    // 2) VAR-Slots prüfen
-    for (const p of varSlots)
-        if (!busy[p]) return { slot: p, tmp: `TMP/${id}/${p}.json`, hdf: `HDF/${id}/${p}.hdf` };
-
-    // 3) Meta-Slot prüfen
-    if (!busy["X"])
-        return { slot: "X", tmp: `TMP/${id}/X.json`, hdf: `HDF/${id}/X.hdf` };
-
-    // 4) Orbit-Slot (∞)
-    return { slot: "∞", tmp: `TMP/${id}/∞.json`, hdf: `HDF/${id}/∞.hdf` };
-}
+</body>
+</html>

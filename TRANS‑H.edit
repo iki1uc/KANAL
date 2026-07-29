@@ -1,0 +1,4 @@
+const ID = "H";
+function RESPO_INTERPRET(tmpPath) { ... }
+function BEN_EVAL(tmpPath) { ... }
+function AI_STEUER_ALGO(orbit, id) { ... }
